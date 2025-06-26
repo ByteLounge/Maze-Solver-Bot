@@ -8,134 +8,156 @@ A fully autonomous obstacle-avoiding robot that navigates a maze using 3 ultraso
 
 ---
 
-## 🔧 Hardware Components
+## 🚀 Features
 
-| Component                 | Quantity  | Description                                   |
-| ------------------------- | --------- | --------------------------------------------- |
-| Arduino Uno               | 1         | Microcontroller Board                         |
-| HC-SR04 Ultrasonic Sensor | 3         | For distance measurement (front, left, right) |
-| L298N Motor Driver        | 1         | To drive the gear motors                      |
-| Gear Motor                | 2         | DC motors with wheels                         |
-| 360° Freewheel Caster     | 1         | For stability and turning support             |
-| Jumper Wires              | As needed | For all connections                           |
-| Power Source              | 1         | 6xAA battery pack or 7.4V Li-ion battery      |
-| Breadboard (Optional)     | 1         | For neat wiring                               |
+- PID-controlled smooth wall-following
+- Obstacle detection using 3 ultrasonic sensors
+- Smart decision-making (left or right turn)
+- Real-time distance logging over Serial Monitor
+- Modular and beginner-friendly C++ code
+- Configurable threshold values and motor speed
 
 ---
 
-## 🔌 Wiring Instructions
+## 🛠️ Components Required
 
-### 🛞 Motors to L298N
-
-* Motor A: `OUT1` → Left motor `+`, `OUT2` → Left motor `-`
-* Motor B: `OUT3` → Right motor `+`, `OUT4` → Right motor `-`
-* ENA (Enable A): Pin 3 (PWM)
-* ENB (Enable B): Pin 11 (PWM)
-
-### 🎯 Ultrasonic Sensors
-
-| Sensor | Trigger | Echo | Arduino Pin                           |
-| ------ | ------- | ---- | ------------------------------------- |
-| Front  | 9       | A0   | `TRIGGER_PIN_FRONT`, `ECHO_PIN_FRONT` |
-| Left   | 10      | A1   | `TRIGGER_PIN_LEFT`, `ECHO_PIN_LEFT`   |
-| Right  | 12      | A2   | `TRIGGER_PIN_RIGHT`, `ECHO_PIN_RIGHT` |
-
-### 🧠 Control Pins (L298N)
-
-| L298N Pin | Arduino Pin |
-| --------- | ----------- |
-| IN1       | 5           |
-| IN2       | 6           |
-| IN3       | 7           |
-| IN4       | 8           |
+| Component                | Quantity |
+|--------------------------|----------|
+| Arduino Uno              | 1        |
+| Ultrasonic Sensor (HC-SR04 or compatible) | 3        |
+| L298N Motor Driver       | 1        |
+| DC Gear Motors           | 2        |
+| 360° Swivel Caster Wheel| 1        |
+| Wheels                   | 2        |
+| Jumper Wires (M-M/F-M)   | ~20      |
+| Power Supply (9V battery or Li-ion pack) | 1        |
+| Breadboard (optional)    | 1        |
 
 ---
 
-## 🧠 Code Logic Overview
+## ⚙️ Wiring Overview
 
-* **Front Sensor**: Detects obstacle straight ahead.
+| Ultrasonic Sensor | Arduino Pin |
+|-------------------|-------------|
+| Left Trigger      | A3          |
+| Left Echo         | A0          |
+| Front Trigger     | A4          |
+| Front Echo        | A1          |
+| Right Trigger     | A5          |
+| Right Echo        | A2          |
 
-  * If ≤ 3 cm: Reverse for 500ms.
-  * If between 3–10 cm: Decide turn direction based on side distances.
-* **Left & Right Sensors**:
-
-  * If ≤ 5 cm: Turns away from the obstacle.
-* **Normal Behavior**: If all sensors detect clear path (>10 cm), moves forward.
-
-### 📜 Key Thresholds
-
-```
-int stopDistance = 10;
-int sideStopDistance = 5;
-int reverseDistance = 3;
-```
-
----
-
-## 🧪 How to Setup and Upload in Arduino IDE
-
-### ✅ 1. Install Arduino IDE
-
-* Download from [https://www.arduino.cc/en/software](https://www.arduino.cc/en/software)
-
-### ✅ 2. Install NewPing Library
-
-* Go to **Sketch > Include Library > Manage Libraries**
-* Search for `NewPing` and install the latest version.
-
-### ✅ 3. Upload Code
-
-* Select **Board**: Arduino Uno
-* Select **Port**: COM port where Uno is connected
-* Click **Upload**
-
-### ✅ 4. Open Serial Monitor
-
-* Go to **Tools > Serial Monitor** or press `Ctrl + Shift + M`
-* Set baud rate to **115200**
-* Monitor live distance readings and obstacle detection messages
+| Motor Driver (L298N) | Arduino Pin |
+|----------------------|-------------|
+| ENA                  | 10          |
+| IN1, IN2             | 2, 3        |
+| ENB                  | 11          |
+| IN3, IN4             | 4, 5        |
 
 ---
 
-## 🐞 Debugging Tips
+## 📦 How to Setup the Maze Solver
 
-| Issue                        | Cause                         | Fix                                 |
-| ---------------------------- | ----------------------------- | ----------------------------------- |
-| `0 cm` distance consistently | Sensor not connected properly | Check VCC, GND, Trigger, Echo       |
-| Only front sensor detects    | Wrong trigger/echo pin        | Recheck `#define` and wiring        |
-| Motors not moving            | No power or wrong wiring      | Ensure 7V+ external supply to L298N |
-| Turns in wrong direction     | Motor polarity reversed       | Swap OUT1/OUT2 or OUT3/OUT4         |
+### 1. Circuit Assembly
+
+- Connect ultrasonic sensors to analog pins as shown.
+- Connect motor driver to digital pins (IN1–IN4 and ENA/ENB).
+- Connect power supply to the motor driver (VS and GND).
+- Ensure common ground between Arduino and Motor Driver.
+
+### 2. Arduino IDE Setup
+
+#### 🔧 Installation
+
+1. Download and install [Arduino IDE](https://www.arduino.cc/en/software)
+2. Install **NewPing** library:  
+   - Go to: `Sketch` > `Include Library` > `Manage Libraries`  
+   - Search: `NewPing` and install
+
+#### ⬆️ Uploading Code
+
+1. Open the `.ino` file (Maze Solver Code)
+2. Select board: `Tools` > `Board` > `Arduino Uno`
+3. Select port: `Tools` > `Port` > (e.g., COM3)
+4. Click ✅ (Verify) and then ⬇️ (Upload)
+
+#### 🧪 Using Serial Monitor
+
+- Go to `Tools` > `Serial Monitor` or press `Ctrl+Shift+M`
+- Set **baud rate** to `115200`
+- Use this to:
+  - Monitor sensor distances
+  - Debug wall-following behavior
+  - Check for sensor connection issues
 
 ---
 
-## 🧠 Enhancements You Can Add
+## 🧠 Code Overview
 
-* Infrared line sensors for edge detection
-* PID-based wall following
-* Bluetooth/ESP control override
-* LCD display or LED indicators for debugging
+### Key Parameters:
+```cpp
+float P = 0.7, D = 0.5, I = 0.4;  // PID coefficients
+int baseSpeed = 70;
+int wall_threshold = 13;
+int front_threshold = 7;
+````
+
+### Functional Flow:
+
+1. **ReadSensors()**: Averages ultrasonic readings for smoother control
+2. **walls()**: Sets boolean flags for left/right/front wall detection
+3. **pid\_start()**: Uses PID logic to align with both walls (before first turn)
+4. **PID()**: Follows either left or right wall after first turn
+5. **setDirection()**: Sets motor directions (FORWARD, LEFT, RIGHT, STOP, BACKWARD)
+
+### Decision Logic:
+
+* Before first turn: Aligns with both walls
+* After first turn: Follows closer wall (left or right)
+* If all sensors read invalid (>100 cm or 0): STOP
 
 ---
 
-## 📂 Folder Structure
+## ⚔️ Code Comparison: PID Maze Solver vs Basic Obstacle Avoidance
 
-```
-MazeSolverRobot/
-├── MazeSolver.ino   # Main Arduino code
-├── README.md        # This file
-```
+| Feature               | **PID Maze Solver** (Advanced) | **Basic Avoidance Bot** (Simple) |
+| --------------------- | ------------------------------ | -------------------------------- |
+| PID control           | ✅ Yes                          | ❌ No                             |
+| Wall-following        | ✅ Adaptive left/right          | ❌ No                             |
+| Obstacle detection    | ✅ 3-way + logic                | ✅ Basic (front/side)             |
+| Maze solving          | ✅ Yes                          | ❌ No                             |
+| Ease of understanding | ❌ Moderate complexity          | ✅ Beginner-friendly              |
+| Speed tuning          | ✅ Precise via PID              | ❌ Fixed turns                    |
+| Use-case              | Competitions, complex mazes    | Demonstration, entry-level bots  |
+
+> **Use PID Code** when you want precision, wall-following, and maze solving.
+> **Use Basic Code** when testing sensor wiring or teaching beginners about robotics.
 
 ---
 
-## 📸 Sample Output on Serial Monitor
+## 🧪 Troubleshooting
 
-```
-Front Distance: 12 cm | Left Distance: 25 cm | Right Distance: 22 cm
-Path clear, moving FORWARD
-Front Distance: 4 cm | Left Distance: 12 cm | Right Distance: 15 cm
-Obstacle very close at FRONT! Reversing...
-Turning left...
-```
+| Issue                         | Solution                                  |
+| ----------------------------- | ----------------------------------------- |
+| Sensor reads `0` or `>100 cm` | Check trigger/echo pins and power         |
+| Motors not moving             | Verify IN1–IN4 wiring and ENA/ENB PWM     |
+| Wrong turn direction          | Check motor polarity or motor pin logic   |
+| Bot doesn’t detect walls      | Adjust `wall_threshold` and sensor angles |
+| PID response too aggressive   | Reduce `P`, `D`, or `I` values            |
+
+
+---
+
+## 📜 License
+
+This project is licensed under the MIT License.
+
+---
+
+### 🔗 Useful Links
+
+* [Arduino Documentation](https://docs.arduino.cc/)
+* [NewPing Library](https://bitbucket.org/teckel12/arduino-new-ping/wiki/Home)
+* [L298N Motor Driver Guide](https://lastminuteengineers.com/l298n-dc-stepper-driver-arduino-tutorial/)
 
 ---
 
@@ -155,6 +177,7 @@ Turning left...
 
 ![Screenshot 2025-06-25 130240](https://github.com/user-attachments/assets/54b213f5-5512-48bf-a71e-2343fb33eb67)
 
+---
 
 ## 📄 License
 
